@@ -1,8 +1,8 @@
 <?php
 namespace Nebo15\LumenApplicationable\Controllers;
 
+use Nebo15\LumenApplicationable\Contracts\ApplicationableUserContract;
 use Nebo15\LumenApplicationable\Exceptions\UserException;
-use Nebo15\LumenApplicationable\Interfaces\ApplicationableUserInterface;
 use Nebo15\LumenApplicationable\Models\Application;
 use Nebo15\REST\AbstractController;
 use Nebo15\REST\Response;
@@ -27,8 +27,8 @@ class ApplicationController extends AbstractController
         $this->validateRoute();
         $user = $this->request->user();
 
-        if (!$user instanceof ApplicationableUserInterface) {
-            throw new UserException("Model " . get_class($this->request->user()) . " should be implement ApplicationableUserInterface");
+        if (!$user instanceof ApplicationableUserContract) {
+            throw new UserException("Model " . get_class($this->request->user()) . " should be implement ApplicationableUserContract");
         }
 
         $application = $this->getRepository()->createOrUpdate($this->request->all());
@@ -62,7 +62,7 @@ class ApplicationController extends AbstractController
     public function index()
     {
         $application = app()->offsetGet('applicationable.application');
-        return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
 

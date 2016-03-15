@@ -25,20 +25,30 @@ class Router
             throw new MiddlewareException('You should set middleware key to applicationable config');
         }
 
+        $this->app->group(
+            [
+                'prefix' => $prefix,
+                'namespace' => '\Nebo15\LumenApplicationable\Controllers',
+            ],
+            function ($app) use ($name, $consumer, $middleware) {
+                $this->app->post($name, ['uses' => 'ApplicationController@create', 'middleware' => $middleware]);
 
-        $this->app->post($prefix . $name, [
-            'uses' => '\Nebo15\LumenApplicationable\Controllers\ApplicationController@create',
-            'middleware' => $middleware,
-        ]);
+                $this->app->get(
+                    $name,
+                    [
+                        'uses' => 'ApplicationController@index',
+                        'middleware' => ['applicationable', $middleware],
+                    ]
+                );
 
-        $this->app->get($prefix . $name, [
-            'uses' => '\Nebo15\LumenApplicationable\Controllers\ApplicationController@index',
-            'middleware' => [$middleware, 'applicationable'],
-        ]);
-
-        $this->app->post($prefix . $consumer, [
-            'uses' => '\Nebo15\LumenApplicationable\Controllers\ApplicationController@consumer',
-            'middleware' => [$middleware, 'applicationable'],
-        ]);
+                $this->app->post(
+                    $consumer,
+                    [
+                        'uses' => 'ApplicationController@consumer',
+                        'middleware' => ['applicationable', $middleware],
+                    ]
+                );
+            }
+        );
     }
 }

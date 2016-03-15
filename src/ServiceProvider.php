@@ -19,11 +19,13 @@ class ServiceProvider extends LumenServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/config/applicationable.php', 'applicationable'
+            __DIR__.'/config/applicationable.php',
+            'applicationable'
         );
 
         $this->app->routeMiddleware([
             'applicationable' => Middlewares\ApplicationableMiddleware::class,
+            'user_or_client' => Middlewares\UserOrClientMiddleware::class,
         ]);
 
         $this->app->singleton('Applicationable.routes', function ($app) {

@@ -1,0 +1,15 @@
+### Laravel template
+/bootstrap/compiled.php
+.env.*.php
+.env.php
+.env
+### OSX template
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*

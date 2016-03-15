@@ -16,11 +16,13 @@ class Application extends Model implements ListableInterface
 
     protected $visible = ['_id', 'title', 'description', 'users', 'consumers'];
 
+    protected $casts = ['_id' => 'string'];
+
     protected function getArrayableRelations()
     {
         return [
             'users' => $this->users,
-            'consumers' => $this->consumers
+            'consumers' => $this->consumers,
         ];
     }
 
@@ -43,12 +45,14 @@ class Application extends Model implements ListableInterface
     {
         $token = ($data instanceof User) ? $data : new User($data);
         $this->users()->associate($token);
+
         return $this;
     }
 
     public function deleteUser($user_id)
     {
         $this->users()->dissociate($this->getUser($user_id));
+
         return $this;
     }
 
@@ -61,13 +65,14 @@ class Application extends Model implements ListableInterface
     {
         $token = ($data instanceof Consumer) ? $data : new Consumer($data);
         $this->consumers()->associate($token);
+
         return $this;
     }
 
     public function deleteConsumer($client_id)
     {
         $this->consumers()->dissociate($this->getConsumer($client_id));
+
         return $this;
     }
-
 }

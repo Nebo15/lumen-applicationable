@@ -23,7 +23,9 @@ class ApplicationableMiddleware
             throw new MiddlewareException("You should set correct 'X-Application' header");
         }
         app()->offsetSet('applicationable.application', $project);
-        $this->auth->guard()->user()->setCurrentApplication($project)->getAndSetApplicationUser();
+        if ($this->auth->guard()->user()) {
+            $this->auth->guard()->user()->setCurrentApplication($project)->getAndSetApplicationUser();
+        }
         return $next($request);
     }
 }

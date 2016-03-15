@@ -8,9 +8,6 @@
     }
   ],
   "license" : "MIT",
-  "require" : {
-    "nebo15/lumen.applicationable": "*"
-  },
   "require-dev": {
     "laravel/lumen-framework": "5.2.*",
     "jenssegers/mongodb": "2.*",
@@ -19,6 +16,6 @@
   "autoload": {
     "psr-4": { "Nebo15\\LumenApplicationable\\": "src" }
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "minimum-stability": "dev"
 }

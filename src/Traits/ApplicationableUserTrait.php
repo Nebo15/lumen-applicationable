@@ -9,11 +9,6 @@ trait ApplicationableUserTrait
     private $application;
     private $applicationUser;
 
-    public function __call($name, $arguments)
-    {
-        return parent::__call($name, $arguments);
-    }
-
     /**
      * @return Application
      */
@@ -30,12 +25,19 @@ trait ApplicationableUserTrait
     public function setCurrentApplication($application)
     {
         $this->application = $application;
+
         return $this;
+    }
+
+    public function getCurrentApplication()
+    {
+        return $this->application;
     }
 
     public function getAndSetApplicationUser()
     {
         $this->applicationUser = $this->application->getUser($this->getId());
+
         return $this;
     }
 
