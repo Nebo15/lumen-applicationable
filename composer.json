@@ -1,0 +1,24 @@
+{
+  "name": "nebo15/lumen.applicationable",
+  "description": "Interfaces and Traits for applicationable models",
+  "keywords": ["lumen", "applicationable", "mongoDb"],
+  "authors": [
+    {
+      "name": "Oleh Samorai"
+    }
+  ],
+  "license" : "MIT",
+  "require" : {
+    "nebo15/lumen.applicationable": "*"
+  },
+  "require-dev": {
+    "laravel/lumen-framework": "5.2.*",
+    "jenssegers/mongodb": "2.*",
+    "squizlabs/php_codesniffer": "2.*"
+  },
+  "autoload": {
+    "psr-4": { "Nebo15\\LumenApplicationable\\": "src" }
+  },
+  "version": "0.0.1",
+  "minimum-stability": "dev"
+}
