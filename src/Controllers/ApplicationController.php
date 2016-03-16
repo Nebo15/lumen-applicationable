@@ -1,7 +1,7 @@
 <?php
 namespace Nebo15\LumenApplicationable\Controllers;
 
-use Nebo15\LumenApplicationable\Contracts\ApplicationableUserContract;
+use Nebo15\LumenApplicationable\Contracts\ApplicationableUser as ApplicationableUserContract;
 use Nebo15\LumenApplicationable\Exceptions\UserException;
 use Nebo15\LumenApplicationable\Models\Application;
 use Nebo15\REST\AbstractController;
@@ -19,6 +19,7 @@ class ApplicationController extends AbstractController
         'update' => [],
         'consumer' => [
             'description' => 'string',
+            'scope' => 'required|array',
         ],
     ];
 
@@ -49,11 +50,15 @@ class ApplicationController extends AbstractController
     public function consumer()
     {
         /** @var Application $application */
+
+        #TODO: check if user can set this scopes, check if scopes is correct
+        $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
         $application->setConsumer([
             'client_id' => $this->generateToken(),
             'client_secret' => $this->generateToken(),
             'description' => $this->request->get('description', ''),
+            'scope' => $this->request->get('scope'),
         ])->save();
 
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);

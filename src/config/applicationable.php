@@ -4,13 +4,19 @@ return [
     'routes' => [
         'prefix' => 'api/v1',
         'project_name' => '/projects',
-        'consumer_name' => '/projects/consumer',
+        'consumer_name' => '/checker',
     ],
     'scopes' => [
-        'create',
-        'read',
-        'update',
-        'delete',
-        'check',
-    ]
+        'scope1',
+        'scope2',
+        'scope3',
+    ],
+    'acl' => [
+        'get' => [
+            'api/v1/route1' => ['scope1', 'scope3'],
+        ],
+        'post' => [],
+        'put' => [],
+        'delete' => [],
+    ],
 ];

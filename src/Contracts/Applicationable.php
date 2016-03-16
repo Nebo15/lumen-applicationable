@@ -1,7 +1,7 @@
 <?php
 namespace Nebo15\LumenApplicationable\Contracts;
 
-interface ApplicationableContract
+interface Applicationable
 {
 
     public function getApplications();

@@ -19,6 +19,8 @@ class UserOrClientMiddleware
             $consumer = app()->offsetGet('applicationable.application')->getConsumer($request->getUser());
             if (!$consumer || $consumer->client_secret != $request->getPassword()) {
                 throw new AuthorizationException;
+            } else {
+                app()->offsetSet('applicationable.consumer', $consumer);
             }
         }
         return $next($request);

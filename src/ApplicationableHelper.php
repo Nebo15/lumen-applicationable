@@ -1,7 +1,7 @@
 <?php
 namespace Nebo15\LumenApplicationable;
 
-use Nebo15\LumenApplicationable\Contracts\ApplicationableContract;
+use Nebo15\LumenApplicationable\Contracts\Applicationable as ApplicationableContract;
 
 class ApplicationableHelper
 {

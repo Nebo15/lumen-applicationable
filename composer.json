@@ -8,6 +8,9 @@
     }
   ],
   "license" : "MIT",
+  "require": {
+    "nebo15/lumen.rest": "*"
+  },
   "require-dev": {
     "laravel/lumen-framework": "5.2.*",
     "jenssegers/mongodb": "2.*",

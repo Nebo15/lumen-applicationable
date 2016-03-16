@@ -2,7 +2,7 @@
 
 namespace Nebo15\LumenApplicationable\Contracts;
 
-interface ApplicationableUserContract
+interface ApplicationableUser
 {
     public function getApplications();
 
