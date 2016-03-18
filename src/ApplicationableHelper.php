@@ -10,4 +10,9 @@ class ApplicationableHelper
         $application = app()->offsetGet('applicationable.application');
         $model->addApplication($application->_id);
     }
+
+    public static function getApplicationId()
+    {
+        return app()->offsetGet('applicationable.application')->_id;
+    }
 }

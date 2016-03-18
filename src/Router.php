@@ -31,21 +31,45 @@ class Router
                 'namespace' => '\Nebo15\LumenApplicationable\Controllers',
             ],
             function ($app) use ($name, $consumer, $middleware) {
-                $this->app->post($name, ['uses' => 'ApplicationController@create', 'middleware' => $middleware]);
+                $app->post($name, ['uses' => 'ApplicationController@create', 'middleware' => $middleware]);
 
-                $this->app->get(
+                $app->get(
                     $name,
                     [
                         'uses' => 'ApplicationController@index',
-                        'middleware' => ['applicationable', $middleware],
+                        'middleware' => array_merge(['applicationable'], $middleware),
                     ]
                 );
 
-                $this->app->post(
+                $app->post(
                     $consumer,
                     [
                         'uses' => 'ApplicationController@consumer',
-                        'middleware' => ['applicationable', $middleware],
+                        'middleware' => array_merge(['applicationable'], $middleware),
+                    ]
+                );
+
+                $app->delete(
+                    $consumer,
+                    [
+                        'uses' => 'ApplicationController@deleteConsumer',
+                        'middleware' => array_merge(['applicationable'], $middleware),
+                    ]
+                );
+
+                $app->post(
+                    $name . '/users',
+                    [
+                        'uses' => 'ApplicationController@user',
+                        'middleware' => array_merge(['applicationable'], $middleware),
+                    ]
+                );
+
+                $app->delete(
+                    $name . '/users',
+                    [
+                        'uses' => 'ApplicationController@deleteUser',
+                        'middleware' => array_merge(['applicationable'], $middleware),
                     ]
                 );
             }

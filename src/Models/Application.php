@@ -52,7 +52,6 @@ class Application extends Model implements ListableInterface
     public function deleteUser($user_id)
     {
         $this->users()->dissociate($this->getUser($user_id));
-
         return $this;
     }
 

@@ -25,8 +25,8 @@ class ServiceProvider extends LumenServiceProvider
 
         $this->app->routeMiddleware([
             'applicationable' => Middlewares\ApplicationableMiddleware::class,
-            'user_or_client' => Middlewares\UserOrClientMiddleware::class,
-            'has_access' => Middlewares\ApplicationableCorrectScopeMiddleware::class,
+            'applicationable.user_or_client' => Middlewares\UserOrClientMiddleware::class,
+            'applicationable.acl' => Middlewares\ApplicationableCorrectScopeMiddleware::class,
         ]);
 
         $this->app->singleton('Applicationable.routes', function ($app) {

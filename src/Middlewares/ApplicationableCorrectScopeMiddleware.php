@@ -26,6 +26,7 @@ class ApplicationableCorrectScopeMiddleware
 
                 if (!$this->auth->guard()->guest()) {
                     $user = $this->auth->guard()->user()->getApplicationUser();
+
                     foreach ($scopesMethods as $scopeMethod) {
                         if (!$user->$scopeMethod()) {
                             throw new AccessDeniedException;

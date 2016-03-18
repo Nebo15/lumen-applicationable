@@ -16,10 +16,21 @@ class ApplicationController extends AbstractController
             'title' => 'required|string',
             'description' => 'string',
         ],
-        'update' => [],
+        'update' => [ ],
+        'user' => [
+            'user_id' => 'required',
+            'role' => 'required|string',
+            'scope' => 'required|array',
+        ],
+        'deleteUser' => [
+            'user_id' => 'required|string',
+        ],
         'consumer' => [
             'description' => 'string',
             'scope' => 'required|array',
+        ],
+        'deleteConsumer' => [
+            'client_id' => 'string',
         ],
     ];
 
@@ -47,11 +58,38 @@ class ApplicationController extends AbstractController
         );
     }
 
+    public function user()
+    {
+        $current_user = $this->request->user()->getApplicationUser();
+        $this->validationRules['user']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validateRoute();
+        $application = app()->offsetGet('applicationable.application');
+        $application->setUser($this->request->all())->save();
+        return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+    }
+
+    public function deleteUser()
+    {
+        $this->validateRoute();
+        $application = app()->offsetGet('applicationable.application');
+        $application->deleteUser($this->request->get('user_id'));
+        return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+    }
+
+    public function deleteConsumer()
+    {
+        $this->validateRoute();
+        $application = app()->offsetGet('applicationable.application');
+        $application->deleteConsumer($this->request->get('client_id'));
+        return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+    }
+
     public function consumer()
     {
         /** @var Application $application */
 
-        #TODO: check if user can set this scopes, check if scopes is correct
+        $current_user = $this->request->user()->getApplicationUser();
+        $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
         $application->setConsumer([
