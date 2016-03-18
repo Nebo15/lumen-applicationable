@@ -11,4 +11,6 @@ interface Applicationable
     public function addApplication($application);
 
     public function removeApplication($application);
+
+    public static function findById($id);
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Nebo15\LumenApplicationable\Traits;
 
+use Nebo15\LumenApplicationable\Exceptions\IdNotFoundException;
+
 trait ApplicationableTrait
 {
     public function __construct()
@@ -40,5 +42,16 @@ trait ApplicationableTrait
             $applications = array_values($applications);
             $this->setAttribute('applications', $applications);
         }
+    }
+
+    public static function findById($id)
+    {
+        if (empty($id)) {
+            throw new IdNotFoundException;
+        }
+
+        $query = self::where(self::PRIMARY_KEY, $id);
+        $query->where(['applications' => ['$in' => [ApplicationableHelper::getApplicationId()]]]);
+        return $query->firstOrFail();
     }
 }
