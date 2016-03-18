@@ -13,7 +13,7 @@ return [
     ],
     'acl' => [
         'get' => [
-            'api/v1/route1' => ['scope1', 'scope3'],
+            '~^api/v1/(.+)$~' => ['scope1', 'scope3'],
         ],
         'post' => [],
         'put' => [],
