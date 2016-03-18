@@ -1,6 +1,7 @@
 <?php
 namespace Nebo15\LumenApplicationable\Traits;
 
+use Nebo15\LumenApplicationable\ApplicationableHelper;
 use Nebo15\LumenApplicationable\Exceptions\IdNotFoundException;
 
 trait ApplicationableTrait
@@ -53,5 +54,10 @@ trait ApplicationableTrait
         $query = self::where(self::PRIMARY_KEY, $id);
         $query->where(['applications' => ['$in' => [ApplicationableHelper::getApplicationId()]]]);
         return $query->firstOrFail();
+    }
+
+    public static function paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
+    {
+        return self::where(['applications' => ['$in' => [ApplicationableHelper::getApplicationId()]]])->paginate($perPage, $columns, $pageName, $page);
     }
 }
