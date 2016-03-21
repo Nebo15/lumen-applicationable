@@ -18,8 +18,9 @@ class Router
     {
         $middleware = config('applicationable.middleware');
         $prefix = config('applicationable.routes.prefix');
-        $name = config('applicationable.routes.project_name');
-        $consumer = config('applicationable.routes.consumer_name');
+        $applications = config('applicationable.routes.applications');
+        $consumers = config('applicationable.routes.consumers');
+        $users = config('applicationable.routes.users');
 
         if (!$middleware) {
             throw new MiddlewareException('You should set middleware key to applicationable config');
@@ -30,11 +31,11 @@ class Router
                 'prefix' => $prefix,
                 'namespace' => '\Nebo15\LumenApplicationable\Controllers',
             ],
-            function ($app) use ($name, $consumer, $middleware) {
-                $app->post($name, ['uses' => 'ApplicationController@create', 'middleware' => $middleware]);
+            function ($app) use ($applications, $consumers, $users, $middleware) {
+                $app->post($applications, ['uses' => 'ApplicationController@create', 'middleware' => $middleware]);
 
                 $app->get(
-                    $name,
+                    $applications,
                     [
                         'uses' => 'ApplicationController@index',
                         'middleware' => array_merge(['applicationable'], $middleware),
@@ -42,7 +43,7 @@ class Router
                 );
 
                 $app->post(
-                    $consumer,
+                    $consumers,
                     [
                         'uses' => 'ApplicationController@consumer',
                         'middleware' => array_merge(['applicationable'], $middleware),
@@ -50,7 +51,7 @@ class Router
                 );
 
                 $app->delete(
-                    $consumer,
+                    $consumers,
                     [
                         'uses' => 'ApplicationController@deleteConsumer',
                         'middleware' => array_merge(['applicationable'], $middleware),
@@ -58,7 +59,7 @@ class Router
                 );
 
                 $app->post(
-                    $name . '/users',
+                    $users,
                     [
                         'uses' => 'ApplicationController@user',
                         'middleware' => array_merge(['applicationable'], $middleware),
@@ -66,7 +67,7 @@ class Router
                 );
 
                 $app->delete(
-                    $name . '/users',
+                    $users,
                     [
                         'uses' => 'ApplicationController@deleteUser',
                         'middleware' => array_merge(['applicationable'], $middleware),

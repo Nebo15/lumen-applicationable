@@ -3,13 +3,20 @@ return [
     'middleware' => ['oauth'],
     'routes' => [
         'prefix' => 'api/v1',
-        'project_name' => '/projects',
-        'consumer_name' => '/checker',
+        'applications' => '/projects',
+        'consumers' => '/checker',
+        'users' => '/checker',
     ],
     'scopes' => [
-        'scope1',
-        'scope2',
-        'scope3',
+        'users' => [
+            'scope1',
+            'scope2',
+            'scope3',
+        ],
+        'consumers' => [
+            'scope1',
+            'scope2',
+        ],
     ],
     'acl' => [
         'get' => [

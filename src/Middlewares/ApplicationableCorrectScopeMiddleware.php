@@ -19,13 +19,16 @@ class ApplicationableCorrectScopeMiddleware
 
         foreach ($routes as $route => $scopes) {
             if (preg_match($route, $request->getPathInfo())) {
-
                 $scopesMethods = array_map(function ($value) {
                     return 'can' . ucfirst($value);
                 }, $scopes);
 
                 if (!$this->auth->guard()->guest()) {
                     $user = $this->auth->guard()->user()->getApplicationUser();
+
+                    if (!$user) {
+                        throw new AccessDeniedException;
+                    }
 
                     foreach ($scopesMethods as $scopeMethod) {
                         if (!$user->$scopeMethod()) {
@@ -43,6 +46,7 @@ class ApplicationableCorrectScopeMiddleware
                         }
                     }
                 }
+
                 return $next($request);
             }
         }

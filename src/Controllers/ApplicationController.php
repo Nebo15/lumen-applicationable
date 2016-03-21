@@ -2,6 +2,7 @@
 namespace Nebo15\LumenApplicationable\Controllers;
 
 use Nebo15\LumenApplicationable\Contracts\ApplicationableUser as ApplicationableUserContract;
+use Nebo15\LumenApplicationable\Exceptions\AclRequiredException;
 use Nebo15\LumenApplicationable\Exceptions\UserException;
 use Nebo15\LumenApplicationable\Models\Application;
 use Nebo15\REST\AbstractController;
@@ -48,7 +49,7 @@ class ApplicationController extends AbstractController
             [
                 'user_id' => $user->getId(),
                 'role' => 'admin',
-                'scope' => config('applicationable.scopes'),
+                'scope' => config('applicationable.scopes.users'),
             ]
         )->save();
 
@@ -61,6 +62,9 @@ class ApplicationController extends AbstractController
     public function user()
     {
         $current_user = $this->request->user()->getApplicationUser();
+        if (!$current_user) {
+            throw new AclRequiredException('ACL required for this route');
+        }
         $this->validationRules['user']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
@@ -72,16 +76,16 @@ class ApplicationController extends AbstractController
     {
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
-        $application->deleteUser($this->request->get('user_id'));
-        return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+        $application->deleteUser($this->request->get('user_id'))->save();
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
     public function deleteConsumer()
     {
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
-        $application->deleteConsumer($this->request->get('client_id'));
-        return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+        $application->deleteConsumer($this->request->get('client_id'))->save();
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
     public function consumer()
@@ -91,6 +95,9 @@ class ApplicationController extends AbstractController
         $current_user = $this->request->user()->getApplicationUser();
         $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
+
+        $this->validate($this->request, ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
+
         $application = app()->offsetGet('applicationable.application');
         $application->setConsumer([
             'client_id' => $this->generateToken(),
