@@ -5,10 +5,9 @@ use Nebo15\LumenApplicationable\Contracts\ApplicationableUser as Applicationable
 use Nebo15\LumenApplicationable\Exceptions\AclRequiredException;
 use Nebo15\LumenApplicationable\Exceptions\UserException;
 use Nebo15\LumenApplicationable\Models\Application;
-use Nebo15\REST\AbstractController;
-use Nebo15\REST\Response;
+use Nebo15\LumenApplicationable\Response;
 
-class ApplicationController extends AbstractController
+class ApplicationController extends Controller
 {
     protected $repositoryClassName = 'Nebo15\LumenApplicationable\Repositories\ApplicationRepository';
 

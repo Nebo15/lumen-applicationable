@@ -29,6 +29,7 @@ trait ApplicationableTrait
         if (!in_array($application, $this->getApplications())) {
             $this->setAttribute('applications', array_merge($this->getApplications(), [$application]));
         }
+        return $this;
     }
 
     public function removeApplication($application)
@@ -43,6 +44,7 @@ trait ApplicationableTrait
             $applications = array_values($applications);
             $this->setAttribute('applications', $applications);
         }
+        return $this;
     }
 
     public static function findById($id)

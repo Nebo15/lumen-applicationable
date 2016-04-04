@@ -34,11 +34,12 @@ class Router
             function ($app) use ($applications, $consumers, $users, $middleware) {
                 $app->post($applications, ['uses' => 'ApplicationController@create', 'middleware' => $middleware]);
 
+                $middleware = array_merge(['applicationable'], $middleware);
                 $app->get(
                     $applications,
                     [
                         'uses' => 'ApplicationController@index',
-                        'middleware' => array_merge(['applicationable'], $middleware),
+                        'middleware' => $middleware,
                     ]
                 );
 
@@ -46,7 +47,7 @@ class Router
                     $consumers,
                     [
                         'uses' => 'ApplicationController@consumer',
-                        'middleware' => array_merge(['applicationable'], $middleware),
+                        'middleware' => $middleware,
                     ]
                 );
 
@@ -54,7 +55,7 @@ class Router
                     $consumers,
                     [
                         'uses' => 'ApplicationController@deleteConsumer',
-                        'middleware' => array_merge(['applicationable'], $middleware),
+                        'middleware' => $middleware,
                     ]
                 );
 
@@ -62,7 +63,7 @@ class Router
                     $users,
                     [
                         'uses' => 'ApplicationController@user',
-                        'middleware' => array_merge(['applicationable'], $middleware),
+                        'middleware' => $middleware,
                     ]
                 );
 
@@ -70,7 +71,7 @@ class Router
                     $users,
                     [
                         'uses' => 'ApplicationController@deleteUser',
-                        'middleware' => array_merge(['applicationable'], $middleware),
+                        'middleware' => $middleware,
                     ]
                 );
             }

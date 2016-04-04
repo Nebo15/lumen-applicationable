@@ -3,12 +3,9 @@
 namespace Nebo15\LumenApplicationable\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use Nebo15\REST\Traits\ListableTrait;
-use Nebo15\REST\Interfaces\ListableInterface;
 
-class Application extends Model implements ListableInterface
+class Application extends Model
 {
-    use ListableTrait;
 
     protected $fillable = ['title', 'description'];
 
