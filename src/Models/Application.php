@@ -33,9 +33,27 @@ class Application extends Model
         return $this->embedsMany('Nebo15\LumenApplicationable\Models\Consumer');
     }
 
+    public function toArray()
+    {
+        $user_model = config('applicationable.user_model');
+        foreach ($this->users as $key => $userObject) {
+            $user = $user_model::find($userObject->user_id);
+            $this->users[$key]->username = $user->username;
+            $this->users[$key]->email = $user->email;
+        }
+        return parent::toArray();
+    }
+
     public function getUser($user_id)
     {
-        return $this->users()->where('user_id', $user_id)->first();
+        $applicationable_user = $this->users()->where('user_id', $user_id)->first();
+        if ($applicationable_user) {
+            $user_model = config('applicationable.user_model');
+            $user = $user_model::find($applicationable_user->user_id);
+            $applicationable_user->username = $user->username;
+            $applicationable_user->email = $user->email;
+        }
+        return $applicationable_user;
     }
 
     public function setUser($data)

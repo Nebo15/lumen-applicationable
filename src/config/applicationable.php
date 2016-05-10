@@ -1,9 +1,11 @@
 <?php
 return [
     'middleware' => ['oauth'],
+    'user_model' => 'App\Models\User',
     'routes' => [
         'prefix' => 'api/v1',
         'applications' => '/projects',
+        'current_application' => '/projects/current',
         'consumers' => '/checker',
         'users' => '/checker',
     ],

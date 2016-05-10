@@ -16,7 +16,7 @@ class ApplicationController extends Controller
             'title' => 'required|string',
             'description' => 'string',
         ],
-        'update' => [ ],
+        'update' => [],
         'user' => [
             'user_id' => 'required',
             'role' => 'required|string',
@@ -34,6 +34,12 @@ class ApplicationController extends Controller
         ],
     ];
 
+    /**
+     * Create Project
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Nebo15\LumenApplicationable\Exceptions\ControllerException
+     * @throws \Nebo15\LumenApplicationable\Exceptions\UserException
+     */
     public function create()
     {
         $this->validateRoute();
@@ -58,6 +64,16 @@ class ApplicationController extends Controller
         );
     }
 
+    public function getCurrentUser()
+    {
+        return $this->response->json($this->request->user()->getApplicationUser(), Response::HTTP_OK);
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Nebo15\LumenApplicationable\Exceptions\AclRequiredException
+     * Add user to project
+     */
     public function user()
     {
         $current_user = $this->request->user()->getApplicationUser();
@@ -68,14 +84,20 @@ class ApplicationController extends Controller
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
         $application->setUser($this->request->all())->save();
+
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);
     }
 
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     * Delete user from project
+     */
     public function deleteUser()
     {
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
         $application->deleteUser($this->request->get('user_id'))->save();
+
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
@@ -84,6 +106,7 @@ class ApplicationController extends Controller
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
         $application->deleteConsumer($this->request->get('client_id'))->save();
+
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
@@ -95,7 +118,8 @@ class ApplicationController extends Controller
         $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
 
-        $this->validate($this->request, ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
+        $this->validate($this->request,
+            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
 
         $application = app()->offsetGet('applicationable.application');
         $application->setConsumer([
@@ -108,9 +132,29 @@ class ApplicationController extends Controller
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);
     }
 
+    public function projectsList()
+    {
+        return $this->response->json(
+            Application::where(
+                [
+                    'users' =>
+                        [
+                            '$elemMatch' =>
+                                ['user_id' => $this->request->user()->getId()],
+                        ],
+                ]
+            )->get()->toArray()
+        );
+    }
+
+    /**
+     * Get Current Project
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function index()
     {
         $application = app()->offsetGet('applicationable.application');
+
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
