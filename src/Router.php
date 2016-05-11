@@ -42,14 +42,18 @@ class Router
                 $app->get($current_application,
                     ['uses' => 'ApplicationController@index', 'middleware' => $middleware,]);
 
-                $app->post($consumers, ['uses' => 'ApplicationController@consumer', 'middleware' => $middleware,]);
+                $app->post($consumers,
+                    ['uses' => 'ApplicationController@createConsumer', 'middleware' => $middleware,]);
+
+                $app->put($consumers,
+                    ['uses' => 'ApplicationController@updateConsumer', 'middleware' => $middleware,]);
 
                 $app->delete($consumers,
                     ['uses' => 'ApplicationController@deleteConsumer', 'middleware' => $middleware,]);
 
                 $app->get($users, ['uses' => 'ApplicationController@getCurrentUser', 'middleware' => $middleware,]);
 
-                $app->post($users, ['uses' => 'ApplicationController@user', 'middleware' => $middleware,]);
+                $app->post($users, ['uses' => 'ApplicationController@addUserToProject', 'middleware' => $middleware,]);
 
                 $app->delete($users, ['uses' => 'ApplicationController@deleteUser', 'middleware' => $middleware,]);
             }

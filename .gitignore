@@ -13,5 +13,6 @@ Icon
 
 # Thumbnails
 ._*
-
+.idea
 composer.lock
+vendor

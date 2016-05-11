@@ -17,7 +17,7 @@ class ApplicationController extends Controller
             'description' => 'string',
         ],
         'update' => [],
-        'user' => [
+        'addUserToProject' => [
             'user_id' => 'required',
             'role' => 'required|string',
             'scope' => 'required|array',
@@ -25,12 +25,16 @@ class ApplicationController extends Controller
         'deleteUser' => [
             'user_id' => 'required|string',
         ],
-        'consumer' => [
+        'createConsumer' => [
+            'description' => 'string',
+            'scope' => 'required|array',
+        ],
+        'updateConsumer' => [
             'description' => 'string',
             'scope' => 'required|array',
         ],
         'deleteConsumer' => [
-            'client_id' => 'string',
+            'client_id' => 'required|string',
         ],
     ];
 
@@ -74,7 +78,7 @@ class ApplicationController extends Controller
      * @throws \Nebo15\LumenApplicationable\Exceptions\AclRequiredException
      * Add user to project
      */
-    public function user()
+    public function addUserToProject()
     {
         $current_user = $this->request->user()->getApplicationUser();
         if (!$current_user) {
@@ -101,6 +105,22 @@ class ApplicationController extends Controller
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
+    public function updateConsumer()
+    {
+        $current_user = $this->request->user()->getApplicationUser();
+        $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validateRoute();
+
+        $this->validate($this->request,
+            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
+        $application = app()->offsetGet('applicationable.application');
+        $consumer = $application->getConsumer($this->request->get('client_id'))->fill($this->request->request->all());
+        $consumer_data = $consumer->toArray();
+        $application->deleteConsumer($this->request->get('client_id'))->save();
+        $application->setConsumer($consumer_data)->save();
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
+    }
+
     public function deleteConsumer()
     {
         $this->validateRoute();
@@ -110,7 +130,7 @@ class ApplicationController extends Controller
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
-    public function consumer()
+    public function createConsumer()
     {
         /** @var Application $application */
 
