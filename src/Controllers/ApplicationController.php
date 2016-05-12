@@ -86,10 +86,29 @@ class ApplicationController extends Controller
         }
         $this->validationRules['user']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');
-        $application->setUser($this->request->all())->save();
+        $application = app()->offsetGet('applicationable.application');;
+        if (!$application->getUser($this->request->get('user_id'))) {
+            $application->setUser($this->request->all())->save();
+        }
 
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+    }
+
+    public function updateUser()
+    {
+        $current_user = $this->request->user()->getApplicationUser();
+        if (!$current_user) {
+            throw new AclRequiredException('ACL required for this route');
+        }
+        $this->validationRules['user']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validateRoute();
+        $application = app()->offsetGet('applicationable.application');;
+        $user = $application->getUser($this->request->get('user_id'))->fill($this->request->request->all());
+        $user_data = $user->toArray();
+        $application->deleteUser($this->request->get('user_id'))->save();
+        $application->setUser($user_data)->save();
+
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
     /**
@@ -101,31 +120,6 @@ class ApplicationController extends Controller
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');
         $application->deleteUser($this->request->get('user_id'))->save();
-
-        return $this->response->json($application->toArray(), Response::HTTP_OK);
-    }
-
-    public function updateConsumer()
-    {
-        $current_user = $this->request->user()->getApplicationUser();
-        $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
-        $this->validateRoute();
-
-        $this->validate($this->request,
-            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
-        $application = app()->offsetGet('applicationable.application');
-        $consumer = $application->getConsumer($this->request->get('client_id'))->fill($this->request->request->all());
-        $consumer_data = $consumer->toArray();
-        $application->deleteConsumer($this->request->get('client_id'))->save();
-        $application->setConsumer($consumer_data)->save();
-        return $this->response->json($application->toArray(), Response::HTTP_OK);
-    }
-
-    public function deleteConsumer()
-    {
-        $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');
-        $application->deleteConsumer($this->request->get('client_id'))->save();
 
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
@@ -150,6 +144,32 @@ class ApplicationController extends Controller
         ])->save();
 
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+    }
+
+    public function updateConsumer()
+    {
+        $current_user = $this->request->user()->getApplicationUser();
+        $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validateRoute();
+
+        $this->validate($this->request,
+            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
+        $application = app()->offsetGet('applicationable.application');
+        $consumer = $application->getConsumer($this->request->get('client_id'))->fill($this->request->request->all());
+        $consumer_data = $consumer->toArray();
+        $application->deleteConsumer($this->request->get('client_id'))->save();
+        $application->setConsumer($consumer_data)->save();
+
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
+    }
+
+    public function deleteConsumer()
+    {
+        $this->validateRoute();
+        $application = app()->offsetGet('applicationable.application');
+        $application->deleteConsumer($this->request->get('client_id'))->save();
+
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
     public function projectsList()

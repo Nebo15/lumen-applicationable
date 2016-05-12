@@ -55,6 +55,8 @@ class Router
 
                 $app->post($users, ['uses' => 'ApplicationController@addUserToProject', 'middleware' => $middleware,]);
 
+                $app->put($users, ['uses' => 'ApplicationController@updateUser', 'middleware' => $middleware,]);
+
                 $app->delete($users, ['uses' => 'ApplicationController@deleteUser', 'middleware' => $middleware,]);
             }
         );
