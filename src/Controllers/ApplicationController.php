@@ -84,7 +84,7 @@ class ApplicationController extends Controller
         if (!$current_user) {
             throw new AclRequiredException('ACL required for this route');
         }
-        $this->validationRules['user']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validationRules['addUserToProject']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');;
         if (!$application->getUser($this->request->get('user_id'))) {
@@ -100,7 +100,7 @@ class ApplicationController extends Controller
         if (!$current_user) {
             throw new AclRequiredException('ACL required for this route');
         }
-        $this->validationRules['user']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validationRules['updateUser']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
         $application = app()->offsetGet('applicationable.application');;
         $user = $application->getUser($this->request->get('user_id'))->fill($this->request->request->all());
@@ -129,7 +129,7 @@ class ApplicationController extends Controller
         /** @var Application $application */
 
         $current_user = $this->request->user()->getApplicationUser();
-        $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validationRules['createConsumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
 
         $this->validate($this->request,
@@ -149,7 +149,7 @@ class ApplicationController extends Controller
     public function updateConsumer()
     {
         $current_user = $this->request->user()->getApplicationUser();
-        $this->validationRules['consumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validationRules['onsumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
 
         $this->validate($this->request,
