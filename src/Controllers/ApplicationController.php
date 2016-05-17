@@ -118,6 +118,14 @@ class ApplicationController extends Controller
     public function updateUser()
     {
         $current_user = $this->request->user()->getApplicationUser();
+
+        /**
+         * Temporary feature, user can't update himself
+         */
+        if ($current_user->id == $this->request->get('user_id')) {
+            return $this->response->json([], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         if (!$current_user) {
             throw new AclRequiredException('ACL required for this route');
         }
