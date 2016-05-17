@@ -18,10 +18,11 @@ class Router
     {
         $middleware = config('applicationable.middleware');
         $prefix = config('applicationable.routes.prefix');
-        $applications = config('applicationable.routes.applications');
-        $current_application = config('applicationable.routes.current_application');
-        $consumers = config('applicationable.routes.consumers');
-        $users = config('applicationable.routes.users');
+
+        $applications_route = config('applicationable.routes.applications');
+        $current_application_route = config('applicationable.routes.current_application');
+        $consumers_route = config('applicationable.routes.consumers');
+        $users_route = config('applicationable.routes.users');
 
         if (!$middleware) {
             throw new MiddlewareException('You should set middleware key to applicationable config');
@@ -32,32 +33,66 @@ class Router
                 'prefix' => $prefix,
                 'namespace' => '\Nebo15\LumenApplicationable\Controllers',
             ],
-            function ($app) use ($applications, $consumers, $users, $current_application, $middleware) {
+            function ($app) use (
+                $applications_route,
+                $consumers_route,
+                $users_route,
+                $current_application_route,
+                $middleware
+            ) {
 
-                $app->post($applications, ['uses' => 'ApplicationController@create', 'middleware' => $middleware]);
-                $app->get($applications, ['uses' => 'ApplicationController@projectsList', 'middleware' => $middleware]);
+                $app->post(
+                    $applications_route,
+                    ['uses' => 'ApplicationController@create', 'middleware' => $middleware]
+                );
+                $app->get(
+                    $applications_route,
+                    ['uses' => 'ApplicationController@projectsList', 'middleware' => $middleware]
+                );
 
                 $middleware = array_merge(['applicationable'], $middleware);
 
-                $app->get($current_application,
-                    ['uses' => 'ApplicationController@index', 'middleware' => $middleware,]);
+                $app->put(
+                    $applications_route,
+                    ['uses' => 'ApplicationController@updateApplication', 'middleware' => $middleware]
+                );
 
-                $app->post($consumers,
-                    ['uses' => 'ApplicationController@createConsumer', 'middleware' => $middleware,]);
+                $app->get(
+                    $current_application_route,
+                    ['uses' => 'ApplicationController@index', 'middleware' => $middleware,]
+                );
 
-                $app->put($consumers,
-                    ['uses' => 'ApplicationController@updateConsumer', 'middleware' => $middleware,]);
+                $app->post(
+                    $consumers_route,
+                    ['uses' => 'ApplicationController@createConsumer', 'middleware' => $middleware,]
+                );
 
-                $app->delete($consumers,
-                    ['uses' => 'ApplicationController@deleteConsumer', 'middleware' => $middleware,]);
+                $app->put(
+                    $consumers_route,
+                    ['uses' => 'ApplicationController@updateConsumer', 'middleware' => $middleware,]
+                );
 
-                $app->get($users, ['uses' => 'ApplicationController@getCurrentUser', 'middleware' => $middleware,]);
+                $app->delete(
+                    $consumers_route,
+                    ['uses' => 'ApplicationController@deleteConsumer', 'middleware' => $middleware,]
+                );
 
-                $app->post($users, ['uses' => 'ApplicationController@addUserToProject', 'middleware' => $middleware,]);
+                $app->get(
+                    $users_route,
+                    ['uses' => 'ApplicationController@getCurrentUser', 'middleware' => $middleware,]
+                );
 
-                $app->put($users, ['uses' => 'ApplicationController@updateUser', 'middleware' => $middleware,]);
+                $app->post(
+                    $users_route,
+                    ['uses' => 'ApplicationController@addUserToProject', 'middleware' => $middleware,]
+                );
 
-                $app->delete($users, ['uses' => 'ApplicationController@deleteUser', 'middleware' => $middleware,]);
+                $app->put($users_route, ['uses' => 'ApplicationController@updateUser', 'middleware' => $middleware,]);
+
+                $app->delete(
+                    $users_route,
+                    ['uses' => 'ApplicationController@deleteUser', 'middleware' => $middleware,]
+                );
             }
         );
     }

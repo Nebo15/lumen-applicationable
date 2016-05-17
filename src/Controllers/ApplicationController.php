@@ -16,6 +16,10 @@ class ApplicationController extends Controller
             'title' => 'required|string',
             'description' => 'string',
         ],
+        'updateApplication' => [
+            'title' => 'sometimes|required|string',
+            'description' => 'string',
+        ],
         'update' => [],
         'addUserToProject' => [
             'user_id' => 'required',
@@ -68,6 +72,23 @@ class ApplicationController extends Controller
         );
     }
 
+    public function updateApplication()
+    {
+        $this->validateRoute();
+        $user = $this->request->user();
+
+        if (!$user instanceof ApplicationableUserContract) {
+            throw new UserException("Model " . get_class($this->request->user()) . " should be implement ApplicationableUserContract");
+        }
+        $current_application_id = app()->offsetGet('applicationable.application')->_id;
+        $application = $this->getRepository()->createOrUpdate($this->request->all(), $current_application_id);
+
+        return $this->response->json(
+            $application->toArray(),
+            Response::HTTP_OK
+        );
+    }
+
     public function getCurrentUser()
     {
         return $this->response->json($this->request->user()->getApplicationUser(), Response::HTTP_OK);
@@ -86,7 +107,7 @@ class ApplicationController extends Controller
         }
         $this->validationRules['addUserToProject']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');;
+        $application = app()->offsetGet('applicationable.application');
         if (!$application->getUser($this->request->get('user_id'))) {
             $application->setUser($this->request->all())->save();
         }
@@ -102,7 +123,7 @@ class ApplicationController extends Controller
         }
         $this->validationRules['updateUser']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');;
+        $application = app()->offsetGet('applicationable.application');
         $user = $application->getUser($this->request->get('user_id'))->fill($this->request->request->all());
         $user_data = $user->toArray();
         $application->deleteUser($this->request->get('user_id'))->save();
@@ -132,8 +153,10 @@ class ApplicationController extends Controller
         $this->validationRules['createConsumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
 
-        $this->validate($this->request,
-            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
+        $this->validate(
+            $this->request,
+            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]
+        );
 
         $application = app()->offsetGet('applicationable.application');
         $application->setConsumer([
@@ -152,8 +175,10 @@ class ApplicationController extends Controller
         $this->validationRules['onsumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
 
-        $this->validate($this->request,
-            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]);
+        $this->validate(
+            $this->request,
+            ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]
+        );
         $application = app()->offsetGet('applicationable.application');
         $consumer = $application->getConsumer($this->request->get('client_id'))->fill($this->request->request->all());
         $consumer_data = $consumer->toArray();

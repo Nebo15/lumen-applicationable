@@ -58,8 +58,8 @@ class Application extends Model
 
     public function setUser($data)
     {
-        $token = ($data instanceof User) ? $data : new User($data);
-        $this->users()->associate($token);
+        $user = ($data instanceof User) ? $data : new User($data);
+        $this->users()->associate($user);
 
         return $this;
     }

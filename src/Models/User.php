@@ -5,7 +5,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class User extends Model
 {
-    protected $fillable = ['user_id', 'role', 'scope'];
+    protected $fillable = ['user_id', 'role', 'scope', 'owner'];
 
     public function __call($method, $parameters)
     {

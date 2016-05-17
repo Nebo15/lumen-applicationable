@@ -36,7 +36,7 @@ class ApplicationRepository
      */
     public function read($id)
     {
-        return call_user_func_array([$this->modelClassName, 'findById'], [$id]);
+        return call_user_func_array([$this->modelClassName, 'find'], [$id]);
     }
 
     /**
