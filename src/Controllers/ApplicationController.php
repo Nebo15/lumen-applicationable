@@ -213,7 +213,10 @@ class ApplicationController extends Controller
                     'users' =>
                         [
                             '$elemMatch' =>
-                                ['user_id' => $this->request->user()->getId()],
+                                [
+                                    'user_id' => $this->request->user()->getId(),
+                                    'scope' => 'read'
+                                ],
                         ],
                 ]
             )->get()->toArray()
