@@ -23,6 +23,7 @@ class ApplicationableMiddleware
             throw new MiddlewareException("You should set correct 'X-Application' header");
         }
         app()->offsetSet('applicationable.application', $project);
+        app()->instance('Application', $project);
         if ($this->auth->guard()->user()) {
             $this->auth->guard()->user()->setCurrentApplication($project)->getAndSetApplicationUser();
         }
