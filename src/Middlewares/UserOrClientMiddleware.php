@@ -5,6 +5,7 @@ use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use Nebo15\LumenApplicationable\Models\Application;
 
 class UserOrClientMiddleware
 {
@@ -16,7 +17,7 @@ class UserOrClientMiddleware
     public function handle(Request $request, Closure $next)
     {
         if ($this->auth->guard(null)->guest()) {
-            $consumer = app()->offsetGet('applicationable.application')->getConsumer($request->getUser());
+            $consumer = app()->make('Nebo15\LumenApplicationable\Models\Application')->getConsumer($request->getUser());
             if (!$consumer || $consumer->client_secret != $request->getPassword()) {
                 throw new AuthorizationException;
             } else {

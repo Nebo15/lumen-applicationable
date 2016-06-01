@@ -22,11 +22,15 @@ class ApplicationableMiddleware
         if (!$project_id || !$project) {
             throw new MiddlewareException("You should set correct 'X-Application' header");
         }
-        app()->offsetSet('applicationable.application', $project);
-        app()->instance('Application', $project);
+
+        app()->bind('Nebo15\LumenApplicationable\Models\Application', function () use ($project) {
+            return $project;
+        });
+
         if ($this->auth->guard()->user()) {
             $this->auth->guard()->user()->setCurrentApplication($project)->getAndSetApplicationUser();
         }
+
         return $next($request);
     }
 }

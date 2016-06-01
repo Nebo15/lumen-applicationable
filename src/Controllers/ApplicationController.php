@@ -1,6 +1,7 @@
 <?php
 namespace Nebo15\LumenApplicationable\Controllers;
 
+use Nebo15\LumenApplicationable\ApplicationableHelper;
 use Nebo15\LumenApplicationable\Contracts\ApplicationableUser as ApplicationableUserContract;
 use Nebo15\LumenApplicationable\Exceptions\AclRequiredException;
 use Nebo15\LumenApplicationable\Exceptions\UserException;
@@ -80,8 +81,8 @@ class ApplicationController extends Controller
         if (!$user instanceof ApplicationableUserContract) {
             throw new UserException("Model " . get_class($this->request->user()) . " should be implement ApplicationableUserContract");
         }
-        $current_application_id = app()->offsetGet('applicationable.application')->_id;
-        $application = $this->getRepository()->createOrUpdate($this->request->all(), $current_application_id);
+        $application = $this->getRepository()->createOrUpdate($this->request->all(),
+            ApplicationableHelper::getApplicationId());
 
         return $this->response->json(
             $application->toArray(),
@@ -95,11 +96,11 @@ class ApplicationController extends Controller
     }
 
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param \Nebo15\LumenApplicationable\Models\Application $application
+     * @return mixed
      * @throws \Nebo15\LumenApplicationable\Exceptions\AclRequiredException
-     * Add user to project
      */
-    public function addUserToProject()
+    public function addUserToProject(Application $application)
     {
         $current_user = $this->request->user()->getApplicationUser();
         if (!$current_user) {
@@ -107,7 +108,6 @@ class ApplicationController extends Controller
         }
         $this->validationRules['addUserToProject']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');
         if (!$application->getUser($this->request->get('user_id'))) {
             $application->setUser($this->request->all())->save();
         }
@@ -115,7 +115,7 @@ class ApplicationController extends Controller
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);
     }
 
-    public function updateUser()
+    public function updateUser(Application $application)
     {
         $current_user = $this->request->user()->getApplicationUser();
 
@@ -131,7 +131,6 @@ class ApplicationController extends Controller
         }
         $this->validationRules['updateUser']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');
         $user = $application->getUser($this->request->get('user_id'))->fill($this->request->request->all());
         $user_data = $user->toArray();
         $application->deleteUser($this->request->get('user_id'))->save();
@@ -141,19 +140,18 @@ class ApplicationController extends Controller
     }
 
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
-     * Delete user from project
+     * @param \Nebo15\LumenApplicationable\Models\Application $application
+     * @return mixed
      */
-    public function deleteUser()
+    public function deleteUser(Application $application)
     {
         $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');
         $application->deleteUser($this->request->get('user_id'))->save();
 
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
-    public function createConsumer()
+    public function createConsumer(Application $application)
     {
         /** @var Application $application */
 
@@ -166,7 +164,6 @@ class ApplicationController extends Controller
             ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]
         );
 
-        $application = app()->offsetGet('applicationable.application');
         $application->setConsumer([
             'client_id' => $this->generateToken(),
             'client_secret' => $this->generateToken(),
@@ -177,7 +174,7 @@ class ApplicationController extends Controller
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);
     }
 
-    public function updateConsumer()
+    public function updateConsumer(Application $application)
     {
         $current_user = $this->request->user()->getApplicationUser();
         $this->validationRules['onsumer']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
@@ -187,7 +184,6 @@ class ApplicationController extends Controller
             $this->request,
             ['scope' => 'required|array|in:' . join(',', config('applicationable.scopes.consumers'))]
         );
-        $application = app()->offsetGet('applicationable.application');
         $consumer = $application->getConsumer($this->request->get('client_id'))->fill($this->request->request->all());
         $consumer_data = $consumer->toArray();
         $application->deleteConsumer($this->request->get('client_id'))->save();
@@ -196,10 +192,9 @@ class ApplicationController extends Controller
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
-    public function deleteConsumer()
+    public function deleteConsumer(Application $application)
     {
         $this->validateRoute();
-        $application = app()->offsetGet('applicationable.application');
         $application->deleteConsumer($this->request->get('client_id'))->save();
 
         return $this->response->json($application->toArray(), Response::HTTP_OK);
@@ -215,7 +210,7 @@ class ApplicationController extends Controller
                             '$elemMatch' =>
                                 [
                                     'user_id' => $this->request->user()->getId(),
-                                    'scope' => 'read'
+                                    'scope' => 'read',
                                 ],
                         ],
                 ]
@@ -224,13 +219,12 @@ class ApplicationController extends Controller
     }
 
     /**
-     * Get Current Project
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param \Nebo15\LumenApplicationable\Models\Application $application
+     * @return mixed
+     * Get current project
      */
-    public function index()
+    public function index(Application $application)
     {
-        $application = app()->offsetGet('applicationable.application');
-
         return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 

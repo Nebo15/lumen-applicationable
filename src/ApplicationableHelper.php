@@ -2,17 +2,18 @@
 namespace Nebo15\LumenApplicationable;
 
 use Nebo15\LumenApplicationable\Contracts\Applicationable as ApplicationableContract;
+use Nebo15\LumenApplicationable\Models\Application;
 
 class ApplicationableHelper
 {
     public static function addApplication(ApplicationableContract $model)
     {
-        $application = app()->offsetGet('applicationable.application');
-        $model->addApplication($application->_id);
+
+        $model->addApplication(app()->make('Nebo15\LumenApplicationable\Models\Application')->_id);
     }
 
     public static function getApplicationId()
     {
-        return app()->offsetGet('applicationable.application')->_id;
+        return app()->make('Nebo15\LumenApplicationable\Models\Application')->_id;
     }
 }
