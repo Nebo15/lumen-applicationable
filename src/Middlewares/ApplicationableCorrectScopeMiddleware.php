@@ -23,16 +23,20 @@ class ApplicationableCorrectScopeMiddleware
                     return 'can' . ucfirst($value);
                 }, $scopes);
 
+                $accessDenied = false;
+                $deniedScopes = [];
                 if (!$this->auth->guard()->guest()) {
                     $user = $this->auth->guard()->user()->getApplicationUser();
 
                     if (!$user) {
-                        throw new AccessDeniedException;
-                    }
+                        $accessDenied = true;
+                    } else {
 
-                    foreach ($scopesMethods as $scopeMethod) {
-                        if (!$user->$scopeMethod()) {
-                            throw new AccessDeniedException;
+                        foreach ($scopesMethods as $scopeMethod) {
+                            if (!$user->$scopeMethod()) {
+                                $deniedScopes[] = $scopeMethod;
+                                $accessDenied = true;
+                            }
                         }
                     }
                 } else {
@@ -42,9 +46,20 @@ class ApplicationableCorrectScopeMiddleware
                     }
                     foreach ($scopesMethods as $scopeMethod) {
                         if (!$consumer->$scopeMethod()) {
-                            throw new AccessDeniedException;
+                            $deniedScopes[] = $scopeMethod;
+                            $accessDenied = true;
                         }
                     }
+                }
+
+                if ($accessDenied) {
+                    $correct_scopes_names = array_map(function ($value) {
+                        return strtolower(substr($value, 3));
+                    }, $deniedScopes);
+                    throw new AccessDeniedException(json_encode([
+                        'message' => 'Bad Scopes',
+                        'scopes' => $correct_scopes_names,
+                    ]));
                 }
 
                 return $next($request);

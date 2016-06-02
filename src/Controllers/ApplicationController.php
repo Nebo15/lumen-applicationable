@@ -3,7 +3,9 @@ namespace Nebo15\LumenApplicationable\Controllers;
 
 use Nebo15\LumenApplicationable\ApplicationableHelper;
 use Nebo15\LumenApplicationable\Contracts\ApplicationableUser as ApplicationableUserContract;
+use Nebo15\LumenApplicationable\Exceptions\AccessDeniedException;
 use Nebo15\LumenApplicationable\Exceptions\AclRequiredException;
+use Nebo15\LumenApplicationable\Exceptions\TryingToAddDuplicateUserException;
 use Nebo15\LumenApplicationable\Exceptions\UserException;
 use Nebo15\LumenApplicationable\Models\Application;
 use Nebo15\LumenApplicationable\Response;
@@ -21,10 +23,14 @@ class ApplicationController extends Controller
             'title' => 'sometimes|required|string',
             'description' => 'string',
         ],
-        'update' => [],
+        'updateUser' => [
+            'user_id' => 'required',
+            'role' => 'sometimes|required|string|not_in:admin',
+            'scope' => 'sometimes|required|array',
+        ],
         'addUserToProject' => [
             'user_id' => 'required',
-            'role' => 'required|string',
+            'role' => 'required|string|not_in:admin',
             'scope' => 'required|array',
         ],
         'deleteUser' => [
@@ -98,6 +104,7 @@ class ApplicationController extends Controller
     /**
      * @param \Nebo15\LumenApplicationable\Models\Application $application
      * @return mixed
+     * @throws \Nebo15\LumenApplicationable\Exceptions\TryingToAddDuplicateUserException
      * @throws \Nebo15\LumenApplicationable\Exceptions\AclRequiredException
      */
     public function addUserToProject(Application $application)
@@ -108,11 +115,35 @@ class ApplicationController extends Controller
         }
         $this->validationRules['addUserToProject']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
         $this->validateRoute();
+
         if (!$application->getUser($this->request->get('user_id'))) {
             $application->setUser($this->request->all())->save();
+        } else {
+            throw new TryingToAddDuplicateUserException('duplicate user');
         }
 
         return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+    }
+
+    public function setProjectAdmin(Application $application)
+    {
+        $current_user = $this->request->user()->getApplicationUser();
+        if (!$current_user->isAdmin()) {
+            throw new AccessDeniedException(json_encode([
+                'message' => 'Trying set admin',
+                'scopes' => ['is_admin'],
+            ]));
+        }
+        $user = $application->getUser($this->request->get('user_id'))->fill(['role' => 'admin', 'scope' => $current_user->scope]);
+        $user_data = $user->toArray();
+        $application->deleteUser($this->request->get('user_id'))->save();
+        $application->setUser($user_data)->save();
+
+        if (!$user) {
+            throw new \HttpException('not_found', 404);
+        }
+
+        return $this->response->json($application->toArray(), Response::HTTP_OK);
     }
 
     public function updateUser(Application $application)
@@ -142,10 +173,20 @@ class ApplicationController extends Controller
     /**
      * @param \Nebo15\LumenApplicationable\Models\Application $application
      * @return mixed
+     * @throws \Nebo15\LumenApplicationable\Exceptions\AccessDeniedException
      */
     public function deleteUser(Application $application)
     {
+        $this->validationRules['deleteUser']['user_id'] = 'required|string|not_in:' . $this->request->user()->getId();
         $this->validateRoute();
+
+        if ($application->getUser($this->request->get('user_id'))->isAdmin() && !$this->request->user()->getApplicationUser()->isAdmin()) {
+            throw new AccessDeniedException(json_encode([
+                'message' => 'Trying to delete admin',
+                'scopes' => ['is_admin'],
+            ]));
+        }
+
         $application->deleteUser($this->request->get('user_id'))->save();
 
         return $this->response->json($application->toArray(), Response::HTTP_OK);

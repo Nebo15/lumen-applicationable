@@ -20,7 +20,7 @@ class ApplicationableMiddleware
         $project = Application::find($project_id);
 
         if (!$project_id || !$project) {
-            throw new MiddlewareException("You should set correct 'X-Application' header");
+            throw new XApplicationException("You should set correct 'X-Application' header");
         }
 
         app()->bind('Nebo15\LumenApplicationable\Models\Application', function () use ($project) {

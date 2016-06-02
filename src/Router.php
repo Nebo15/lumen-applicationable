@@ -23,6 +23,7 @@ class Router
         $current_application_route = config('applicationable.routes.current_application');
         $consumers_route = config('applicationable.routes.consumers');
         $users_route = config('applicationable.routes.users');
+        $set_admin_route = config('applicationable.routes.set_admin');
 
         if (!$middleware) {
             throw new MiddlewareException('You should set middleware key to applicationable config');
@@ -38,6 +39,7 @@ class Router
                 $consumers_route,
                 $users_route,
                 $current_application_route,
+                $set_admin_route,
                 $middleware
             ) {
 
@@ -93,6 +95,12 @@ class Router
                     $users_route,
                     ['uses' => 'ApplicationController@deleteUser', 'middleware' => $middleware,]
                 );
+
+                $app->post(
+                    $set_admin_route,
+                    ['uses' => 'ApplicationController@setProjectAdmin', 'middleware' => $middleware,]
+                );
+
             }
         );
     }
