@@ -64,6 +64,11 @@ class Router
                     ['uses' => 'ApplicationController@index', 'middleware' => $middleware,]
                 );
 
+                $app->get(
+                    $consumers_route,
+                    ['uses' => 'ApplicationController@getConsumers', 'middleware' => $middleware,]
+                );
+
                 $app->post(
                     $consumers_route,
                     ['uses' => 'ApplicationController@createConsumer', 'middleware' => $middleware,]

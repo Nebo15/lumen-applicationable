@@ -11,7 +11,7 @@ class Application extends Model
 
     protected $listable = ['title', 'description'];
 
-    protected $visible = ['_id', 'title', 'description', 'users', 'consumers'];
+    protected $visible = ['_id', 'title', 'description', 'users'];
 
     protected $casts = ['_id' => 'string'];
 
@@ -19,7 +19,6 @@ class Application extends Model
     {
         return [
             'users' => $this->users,
-            'consumers' => $this->consumers,
         ];
     }
 

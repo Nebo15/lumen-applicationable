@@ -134,7 +134,10 @@ class ApplicationController extends Controller
                 'scopes' => ['is_admin'],
             ]));
         }
-        $user = $application->getUser($this->request->get('user_id'))->fill(['role' => 'admin', 'scope' => $current_user->scope]);
+        $user = $application->getUser($this->request->get('user_id'))->fill([
+            'role' => 'admin',
+            'scope' => $current_user->scope,
+        ]);
         $user_data = $user->toArray();
         $application->deleteUser($this->request->get('user_id'))->save();
         $application->setUser($user_data)->save();
@@ -190,6 +193,11 @@ class ApplicationController extends Controller
         $application->deleteUser($this->request->get('user_id'))->save();
 
         return $this->response->json($application->toArray(), Response::HTTP_OK);
+    }
+
+    public function getConsumers(Application $application)
+    {
+        return $this->response->json($application->consumers()->toArray(), Response::HTTP_OK);
     }
 
     public function createConsumer(Application $application)
