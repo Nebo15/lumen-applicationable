@@ -88,8 +88,10 @@ class ApplicationController extends Controller
         if (!$user instanceof ApplicationableUserContract) {
             throw new UserException("Model " . get_class($this->request->user()) . " should be implement ApplicationableUserContract");
         }
-        $application = $this->getRepository()->createOrUpdate($this->request->all(),
-            ApplicationableHelper::getApplicationId());
+        $application = $this->getRepository()->createOrUpdate(
+            $this->request->all(),
+            ApplicationableHelper::getApplicationId()
+        );
 
         return $this->response->json(
             $application->toArray(),

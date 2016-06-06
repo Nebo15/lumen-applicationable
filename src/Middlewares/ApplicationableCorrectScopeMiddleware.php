@@ -31,7 +31,6 @@ class ApplicationableCorrectScopeMiddleware
                     if (!$user) {
                         $accessDenied = true;
                     } else {
-
                         foreach ($scopesMethods as $scopeMethod) {
                             if (!$user->$scopeMethod()) {
                                 $deniedScopes[] = $scopeMethod;
