@@ -18,6 +18,7 @@ class ApplicationController extends Controller
         'create' => [
             'title' => 'required|string',
             'description' => 'string',
+            'settings' => 'array',
         ],
         'updateApplication' => [
             'title' => 'sometimes|required|string',

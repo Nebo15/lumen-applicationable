@@ -4,14 +4,23 @@ namespace Nebo15\LumenApplicationable\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 
+/**
+ * Class Application
+ * @package Nebo15\LumenApplicationable\Models
+ * @property string $title
+ * @property string $description
+ * @property array $users
+ * @property array $consumers
+ * @property array $settings
+ */
 class Application extends Model
 {
 
-    protected $fillable = ['title', 'description'];
+    protected $fillable = ['title', 'description', 'settings'];
 
     protected $listable = ['title', 'description'];
 
-    protected $visible = ['_id', 'title', 'description', 'users'];
+    protected $visible = ['_id', 'title', 'description', 'users', 'settings'];
 
     protected $casts = ['_id' => 'string'];
 
@@ -87,5 +96,10 @@ class Application extends Model
         $this->consumers()->dissociate($this->getConsumer($client_id));
 
         return $this;
+    }
+
+    public function getSettingsElem($key, $default = null)
+    {
+        return array_key_exists($key, $this->settings) ? $this->settings[$key] : $default;
     }
 }
