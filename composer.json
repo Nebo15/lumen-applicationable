@@ -17,6 +17,6 @@
   "autoload": {
     "psr-4": { "Nebo15\\LumenApplicationable\\": "src" }
   },
-  "version": "0.0.22",
+  "version": "0.0.23",
   "minimum-stability": "stable"
 }
