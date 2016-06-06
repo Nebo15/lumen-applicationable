@@ -22,6 +22,8 @@ class Application extends Model
 
     protected $visible = ['_id', 'title', 'description', 'users', 'settings'];
 
+    protected $attributes = ['settings' => []];
+
     protected $casts = ['_id' => 'string'];
 
     protected function getArrayableRelations()
