@@ -223,7 +223,7 @@ class ApplicationController extends Controller
             'scope' => $this->request->get('scope'),
         ])->save();
 
-        return $this->response->json($application->toArray(), Response::HTTP_CREATED);
+        return $this->response->json($application->consumers()->toArray(), Response::HTTP_CREATED);
     }
 
     public function updateConsumer(Application $application)
@@ -241,7 +241,7 @@ class ApplicationController extends Controller
         $application->deleteConsumer($this->request->get('client_id'))->save();
         $application->setConsumer($consumer_data)->save();
 
-        return $this->response->json($application->toArray(), Response::HTTP_OK);
+        return $this->response->json($application->consumers()->toArray(), Response::HTTP_OK);
     }
 
     public function deleteConsumer(Application $application)
@@ -249,7 +249,7 @@ class ApplicationController extends Controller
         $this->validateRoute();
         $application->deleteConsumer($this->request->get('client_id'))->save();
 
-        return $this->response->json($application->toArray(), Response::HTTP_OK);
+        return $this->response->json($application->consumers()->toArray(), Response::HTTP_OK);
     }
 
     public function projectsList()
