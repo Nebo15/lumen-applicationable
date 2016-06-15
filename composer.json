@@ -11,12 +11,12 @@
   "require": {},
   "require-dev": {
     "laravel/lumen-framework": "5.2.*",
-    "jenssegers/mongodb": "2.*",
+    "jenssegers/mongodb": "3.*",
     "squizlabs/php_codesniffer": "2.*"
   },
   "autoload": {
     "psr-4": { "Nebo15\\LumenApplicationable\\": "src" }
   },
-  "version": "0.0.24",
+  "version": "0.1.1",
   "minimum-stability": "stable"
 }
