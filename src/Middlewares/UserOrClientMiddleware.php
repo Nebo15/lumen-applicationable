@@ -5,7 +5,6 @@ use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Factory as Auth;
-use Nebo15\LumenApplicationable\Models\Application;
 
 class UserOrClientMiddleware
 {

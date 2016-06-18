@@ -1,6 +1,7 @@
 <?php
 namespace Nebo15\LumenApplicationable\Controllers;
 
+use MongoDB\BSON\ObjectID;
 use Nebo15\LumenApplicationable\ApplicationableHelper;
 use Nebo15\LumenApplicationable\Contracts\ApplicationableUser as ApplicationableUserContract;
 use Nebo15\LumenApplicationable\Exceptions\AccessDeniedException;
@@ -68,7 +69,7 @@ class ApplicationController extends Controller
         $application = $this->getRepository()->createOrUpdate($this->request->all());
         $application->setUser(
             [
-                'user_id' => $user->getId(),
+                'user_id' => new ObjectID($user->getId()),
                 'role' => 'admin',
                 'scope' => config('applicationable.scopes.users'),
             ]
@@ -261,7 +262,7 @@ class ApplicationController extends Controller
                         [
                             '$elemMatch' =>
                                 [
-                                    'user_id' => $this->request->user()->getId(),
+                                    'user_id' => new ObjectID($this->request->user()->getId()),
                                     'scope' => 'read',
                                 ],
                         ],

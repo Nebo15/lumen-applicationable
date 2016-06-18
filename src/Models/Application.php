@@ -3,6 +3,7 @@
 namespace Nebo15\LumenApplicationable\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
+use MongoDB\BSON\ObjectID;
 
 /**
  * Class Application
@@ -51,24 +52,36 @@ class Application extends Model
             $this->users[$key]->username = $user->username;
             $this->users[$key]->email = $user->email;
         }
+
         return parent::toArray();
     }
 
     public function getUser($user_id)
     {
-        $applicationable_user = $this->users()->where('user_id', $user_id)->first();
+        $applicationable_user = $this->users()->where('user_id', '$eq', new ObjectID($user_id))->first();
+        /**
+         * Не находит пользователя, хотя в монге номально сохранен
+         */
+        print_r($applicationable_user->toArray());
+        exit;
+//        print_r($user_id);
+
         if ($applicationable_user) {
             $user_model = config('applicationable.user_model');
             $user = $user_model::find($applicationable_user->user_id);
             $applicationable_user->username = $user->username;
             $applicationable_user->email = $user->email;
         }
+
         return $applicationable_user;
     }
 
     public function setUser($data)
     {
         $user = ($data instanceof User) ? $data : new User($data);
+        if (!($user->user_id instanceof ObjectID)) {
+            $user->user_id = new ObjectID($user->user_id);
+        }
         $this->users()->associate($user);
 
         return $this;
@@ -77,6 +90,7 @@ class Application extends Model
     public function deleteUser($user_id)
     {
         $this->users()->dissociate($this->getUser($user_id));
+
         return $this;
     }
 
