@@ -3,9 +3,9 @@ namespace Nebo15\LumenApplicationable\Middlewares;
 
 use Closure;
 use Illuminate\Http\Request;
-use Nebo15\LumenApplicationable\Exceptions\MiddlewareException;
-use Nebo15\LumenApplicationable\Models\Application;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use Nebo15\LumenApplicationable\Models\Application;
+use Nebo15\LumenApplicationable\Exceptions\XApplicationException;
 
 class ApplicationableMiddleware
 {
