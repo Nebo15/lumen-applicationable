@@ -58,13 +58,7 @@ class Application extends Model
 
     public function getUser($user_id)
     {
-        $applicationable_user = $this->users()->where('user_id', '$eq', new ObjectID($user_id))->first();
-        /**
-         * Не находит пользователя, хотя в монге номально сохранен
-         */
-        print_r($applicationable_user->toArray());
-        exit;
-//        print_r($user_id);
+        $applicationable_user = $this->users()->where('user_id', $user_id, false)->first();
 
         if ($applicationable_user) {
             $user_model = config('applicationable.user_model');
