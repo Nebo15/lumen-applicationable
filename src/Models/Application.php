@@ -104,4 +104,9 @@ class Application extends Model
     {
         return array_key_exists($key, $this->settings) ? $this->settings[$key] : $default;
     }
+
+    public function getSettingsAttribute($value)
+    {
+        return $value ?: new \stdClass();
+    }
 }
