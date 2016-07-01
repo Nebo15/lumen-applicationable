@@ -2,6 +2,11 @@
 return [
     'middleware' => ['oauth'],
     'user_model' => 'App\Models\User',
+    'required_scopes' => [
+        'users' => [
+            'scope1',
+        ],
+    ],
     'routes' => [
         'prefix' => 'api/v1',
         'applications' => '/projects',

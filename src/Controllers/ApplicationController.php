@@ -117,7 +117,7 @@ class ApplicationController extends Controller
         if (!$current_user) {
             throw new AclRequiredException('ACL required for this route');
         }
-        $this->validationRules['addUserToProject']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validationRules['addUserToProject']['scope'] = 'required|array|required_scopes|in:' . join(',', $current_user->scope);
         $this->validateRoute();
 
         if (!$application->getUser($this->request->get('user_id'))) {
@@ -167,7 +167,7 @@ class ApplicationController extends Controller
         if (!$current_user) {
             throw new AclRequiredException('ACL required for this route');
         }
-        $this->validationRules['updateUser']['scope'] = 'required|array|in:' . join(',', $current_user->scope);
+        $this->validationRules['updateUser']['scope'] = 'required|array|required_scopes|in:' . join(',', $current_user->scope);
         $this->validateRoute();
         $user = $application->getUser($this->request->get('user_id'))->fill($this->request->request->all());
         $user_data = $user->toArray();
@@ -258,14 +258,7 @@ class ApplicationController extends Controller
         return $this->response->json(
             Application::where(
                 [
-                    'users' =>
-                        [
-                            '$elemMatch' =>
-                                [
-                                    'user_id' => new ObjectID($this->request->user()->getId()),
-                                    'scope' => 'read',
-                                ],
-                        ],
+                    'users.user_id' => new ObjectID($this->request->user()->getId()),
                 ]
             )->get()->toArray()
         );
