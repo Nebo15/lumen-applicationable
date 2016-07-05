@@ -55,10 +55,7 @@ class ApplicationableCorrectScopeMiddleware
                     $correct_scopes_names = array_map(function ($value) {
                         return strtolower(substr($value, 3));
                     }, $deniedScopes);
-                    throw new AccessDeniedException(json_encode([
-                        'message' => 'Bad Scopes',
-                        'scopes' => $correct_scopes_names,
-                    ]));
+                    throw new AccessDeniedException("", 0, null, $correct_scopes_names);
                 }
 
                 return $next($request);

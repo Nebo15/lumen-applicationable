@@ -117,7 +117,8 @@ class ApplicationController extends Controller
         if (!$current_user) {
             throw new AclRequiredException('ACL required for this route');
         }
-        $this->validationRules['addUserToProject']['scope'] = 'required|array|required_scopes|in:' . join(',', $current_user->scope);
+        $this->validationRules['addUserToProject']['scope'] = 'required|array|required_scopes|in:' . join(',',
+                $current_user->scope);
         $this->validateRoute();
 
         if (!$application->getUser($this->request->get('user_id'))) {
@@ -160,16 +161,21 @@ class ApplicationController extends Controller
         /**
          * Temporary feature, user can't update himself
          */
-        if ($current_user->id == $this->request->get('user_id')) {
-            return $this->response->json([], Response::HTTP_UNPROCESSABLE_ENTITY);
+        if ($current_user->user_id == $this->request->get('user_id')) {
+            throw new AccessDeniedException("User can not edit itself");
         }
 
         if (!$current_user) {
             throw new AclRequiredException('ACL required for this route');
         }
-        $this->validationRules['updateUser']['scope'] = 'required|array|required_scopes|in:' . join(',', $current_user->scope);
+        $this->validationRules['updateUser']['scope'] = 'required|array|required_scopes|in:' . join(',',
+                $current_user->scope);
         $this->validateRoute();
-        $user = $application->getUser($this->request->get('user_id'))->fill($this->request->request->all());
+        $user = $application->getUser($this->request->get('user_id'));
+        if ($user->isAdmin() && !$current_user->isAdmin()) {
+            throw new AccessDeniedException("User can not edit admin");
+        }
+        $user->fill($this->request->request->all());
         $user_data = $user->toArray();
         $application->deleteUser($this->request->get('user_id'))->save();
         $application->setUser($user_data)->save();
